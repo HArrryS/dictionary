@@ -25,19 +25,6 @@ def hello_world():
     return render_template("home.html", logged_in=is_logged_in())
 
 
-@app.route('/menu')
-def menu():
-    con = create_connection(DATABASE)
-    query = "SELECT name, description, volume, image, price, id FROM product"
-    cur = con.cursor()
-    cur.execute(query)
-
-    product_list = cur.fetchall()
-    cur.close()
-
-    return render_template("menu.html", products=product_list, logged_in=is_logged_in())
-
-
 @app.route('/contact')
 def contact():
     return render_template("contact.html", logged_in=is_logged_in())
@@ -53,7 +40,7 @@ def login():
         password = request.form.get('password')
 
         con = create_connection(DATABASE)
-        query = "SELECT id, first_name, password FROM customer WHERE email=?"
+        query = "SELECT id, fname, password FROM customer WHERE email=?"
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()
@@ -76,7 +63,7 @@ def login():
         session['first_name'] = first_name
         print(session)
 
-        return redirect("/menu")
+        return redirect("/")
 
     return render_template("login.html", logged_in=is_logged_in())
 
@@ -109,7 +96,7 @@ def signup():
         hashed_password = bcrypt.generate_password_hash(password)
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO customer (first_name, surname, email, password) VALUES (?,?,?,?)"
+        query = "INSERT INTO customer (fname, lname, email, password) VALUES (?,?,?,?)"
 
         cur = con.cursor()
         try:
@@ -144,82 +131,6 @@ def is_logged_in():
     else:
         print("logged in")
         return True
-
-
-@app.route('/addtocart/<productid>')
-def addtocart(productid):
-    try:
-        productid = int(productid)
-    except ValueError:
-        print("{} is not an integer".format(productid))
-        return redirect(request.referrer + "?error=Invalid+product+id")
-
-    userid = session['userid']
-    timestamp = datetime.now()
-    print("user {} would like to add {} to the cart at {}".format(userid, productid, timestamp))
-
-    query = "INSERT INTO cart(id,userid,productid,timestamp) VALUES (NULL,?,?,?)"
-    con = create_connection(DATABASE)
-    cur = con.cursor()
-    cur.execute(query, (userid, productid, timestamp))
-    con.commit()
-    con.close()
-    return redirect(request.referrer)
-
-
-@app.route('/cart')
-def render_cart():
-    userid = session['userid']
-    query = "SELECT productid FROM cart WHERE userid=?;"
-    con = create_connection(DATABASE)
-    cur = con.cursor()
-    cur.execute(query, (userid,))
-    product_ids = cur.fetchall()
-    print(product_ids)
-
-    for i in range(len(product_ids)):
-        product_ids[i] = product_ids[i][0]
-    print(product_ids)
-
-    unique_product_ids = list(set(product_ids))
-    print(unique_product_ids)
-
-    for i in range(len(unique_product_ids)):
-        product_count = product_ids.count(unique_product_ids[i])
-        unique_product_ids[i] = [unique_product_ids[i], product_count]
-    print(unique_product_ids)
-
-    query = """SELECT name, price FROM product where id = ?;"""
-    for item in unique_product_ids:
-        cur.execute(query, (item[0],))
-        item_details = cur.fetchall()
-        print(item_details)
-        item.append(item_details[0][1])
-        item.append(item_details[0][1])
-
-    con.close()
-    print(unique_product_ids)
-
-    return render_template('cart.html', cart_data=unique_product_ids, logged_in=is_logged_in())
-
-
-@app.route('/removefromcart/<productid>')
-def remove_from_cart(productid):
-    print("Remove: {}".format(productid))
-    return redirect('/cart')
-
-
-@app.route('/removeonefromcart/<product_id>')
-def render_from_cart(product_id):
-    print("Remove: {}".format(product_id))
-    customer_id = session['customerid']
-    query = "DELETE FROM cart WHERE id =(SELECT MIN(id) FROM cart WHERE productid=? and customerid=?);"
-    con = create_connection(DATABASE)
-    cur = con.cursor()
-    cur.execute(query, (product_id, customer_id))
-    con.commit()
-    con.close()
-    return redirect('/cart')
 
 
 if __name__ == '__main__':

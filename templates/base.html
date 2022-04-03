@@ -23,6 +23,12 @@
 			<span></span>
 			<ul>
                 <li><a href="\">Home</a></li>
+				<a href="/contact">Contact</a>
+                {% if logged_in %}
+                <a href="/logout">Log Out</a>
+				{% else %}
+                <a href="/login">Login</a>
+                {% endif %}
 
 			</ul>
 		</nav>
