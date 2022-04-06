@@ -5,5 +5,15 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-
+<h3>This is the main part of the page</h3>
+<form class="myform" method="POST">
+    <div class="form-group">
+        <div class="form-label">Category name:</div>
+        <div class="form-element"><input type="category" name="category" id="category" required></div>
+    </div>
+    <div class="form-group">
+        <div class="form-label"></div>
+        <div class="form-element"><input type="submit" value="submit" required></div>
+    </div>
+</form>
 {% endblock %}

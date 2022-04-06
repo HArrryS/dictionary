@@ -1369,7 +1369,7 @@
       <Position>2</Position>
       <DataType>integer|0s</DataType>
     </column>
-    <column id="502" parent="171" name="product_id">
+    <column id="502" parent="171" name="words_id">
       <Position>3</Position>
       <DataType>integer|0s</DataType>
     </column>
