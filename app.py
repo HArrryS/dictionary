@@ -20,9 +20,27 @@ def create_connection(db_file):
     return None
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def hello_world():
-    return render_template("home.html", logged_in=is_logged_in())
+    if request.method == 'POST':
+        print(request.form)
+        category = request.form.get('category').title().strip()
+
+        con = create_connection(DATABASE)
+        query = "INSERT INTO dictionary (category) VALUES (?)"
+        cur = con.cursor()
+        cur.execute(query, (category, ))
+        con.commit()
+        con.close()
+        return redirect('/')
+
+    return render_template("home.html")
+
+    error = request.args.get('error')
+    if error is None:
+        error = ""
+
+    return render_template('home.html', error=error, logged_in=is_logged_in())
 
 
 @app.route('/contact')
@@ -40,7 +58,7 @@ def login():
         password = request.form.get('password')
 
         con = create_connection(DATABASE)
-        query = "SELECT id, fname, password FROM customer WHERE email=?"
+        query = "SELECT id, fname, password FROM user WHERE email=?"
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()
@@ -114,6 +132,21 @@ def signup():
         error = ""
 
     return render_template('signup.html', error=error, logged_in=is_logged_in())
+
+
+@app.route('/category/<category_id>')
+def addtocategory(category_id):
+    userid = session['userid']
+    timestamp = datetime.now()
+    print("user {} would like to add {} to the dictionary at {}".format(userid, category_id, timestamp))
+
+    query = "INSERT INTO Dictionary(id,userid,category_id,timestamp) VALUES (NULL,?,?,?)"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (userid, category_id, timestamp))
+    con.commit()
+    con.close()
+    return redirect(request.referrer)
 
 
 @app.route('/logout')

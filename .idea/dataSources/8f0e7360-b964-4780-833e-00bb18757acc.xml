@@ -369,8 +369,8 @@
     <package id="167" parent="1" name="json_tree"/>
     <package id="168" parent="1" name="rtree"/>
     <package id="169" parent="1" name="rtree_i32"/>
-    <table id="170" parent="2" name="Customer"/>
-    <table id="171" parent="2" name="Dictionary"/>
+    <table id="170" parent="2" name="Dictionary"/>
+    <table id="171" parent="2" name="User"/>
     <table id="172" parent="2" name="Words"/>
     <table id="173" parent="2" name="sqlite_master">
       <System>1</System>
@@ -1338,25 +1338,24 @@
     <column id="494" parent="170" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
-      <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="495" parent="170" name="fname">
+    <column id="495" parent="170" name="user_id">
       <Position>2</Position>
-      <DataType>varchar(30)|0s</DataType>
+      <DataType>integer|0s</DataType>
     </column>
-    <column id="496" parent="170" name="lname">
+    <column id="496" parent="170" name="category_id">
       <Position>3</Position>
-      <DataType>varchar(30)|0s</DataType>
+      <DataType>integer|0s</DataType>
     </column>
-    <column id="497" parent="170" name="email">
+    <column id="497" parent="170" name="category">
       <Position>4</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="498" parent="170" name="password">
+    <column id="498" parent="170" name="timestamp">
       <Position>5</Position>
-      <DataType>integer(30)|0s</DataType>
+      <DataType>datatime|0s</DataType>
     </column>
-    <key id="499" parent="170" name="Customer_pk">
+    <key id="499" parent="170" name="Dictionary_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
@@ -1365,79 +1364,83 @@
       <DataType>integer|0s</DataType>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="501" parent="171" name="customer_id">
+    <column id="501" parent="171" name="fname">
       <Position>2</Position>
-      <DataType>integer|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="502" parent="171" name="words_id">
+    <column id="502" parent="171" name="lname">
       <Position>3</Position>
-      <DataType>integer|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="503" parent="171" name="timestamp">
+    <column id="503" parent="171" name="email">
       <Position>4</Position>
-      <DataType>datatime|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
     </column>
-    <key id="504" parent="171" name="Dictionary_pk">
+    <column id="504" parent="171" name="password">
+      <Position>5</Position>
+      <DataType>integer(30)|0s</DataType>
+    </column>
+    <key id="505" parent="171" name="User_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="505" parent="172" name="id">
+    <column id="506" parent="172" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="506" parent="172" name="maori">
+    <column id="507" parent="172" name="maori">
       <Position>2</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="507" parent="172" name="english">
+    <column id="508" parent="172" name="english">
       <Position>3</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="508" parent="172" name="category">
+    <column id="509" parent="172" name="category">
       <Position>4</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="509" parent="172" name="definition">
+    <column id="510" parent="172" name="definition">
       <Position>5</Position>
       <DataType>varchar(300)|0s</DataType>
     </column>
-    <column id="510" parent="172" name="level">
+    <column id="511" parent="172" name="level">
       <Position>6</Position>
       <DataType>integer(10)|0s</DataType>
     </column>
-    <column id="511" parent="172" name="image">
+    <column id="512" parent="172" name="image">
       <Position>7</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <key id="512" parent="172" name="Product_pk">
+    <key id="513" parent="172" name="Words_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="513" parent="173" name="type">
+    <column id="514" parent="173" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="514" parent="173" name="name">
+    <column id="515" parent="173" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="515" parent="173" name="tbl_name">
+    <column id="516" parent="173" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="516" parent="173" name="rootpage">
+    <column id="517" parent="173" name="rootpage">
       <Position>4</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="517" parent="173" name="sql">
+    <column id="518" parent="173" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="518" parent="174" name="name">
+    <column id="519" parent="174" name="name">
       <Position>1</Position>
     </column>
-    <column id="519" parent="174" name="seq">
+    <column id="520" parent="174" name="seq">
       <Position>2</Position>
     </column>
   </database-model>
