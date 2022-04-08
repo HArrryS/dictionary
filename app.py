@@ -6,7 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "Harry.db"
+DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -58,7 +58,7 @@ def login():
         password = request.form.get('password')
 
         con = create_connection(DATABASE)
-        query = "SELECT id, fname, password FROM user WHERE email=?"
+        query = "SELECT id, fname, password FROM User WHERE email=?"
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()
@@ -66,9 +66,9 @@ def login():
 
         if user_data:
             user_id = user_data[0][0]
-            first_name = user_data[0][1]
+            fname = user_data[0][1]
             db_password = user_data[0][2]
-            print(user_id, first_name)
+            print(user_id, fname)
 
         else:
             return redirect("/login?error=Incorrect+username+or+password")
@@ -78,7 +78,7 @@ def login():
 
         session['email'] = email
         session['userid'] = user_id
-        session['first_name'] = first_name
+        session['first_name'] = fname
         print(session)
 
         return redirect("/")
@@ -114,7 +114,7 @@ def signup():
         hashed_password = bcrypt.generate_password_hash(password)
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO customer (fname, lname, email, password) VALUES (?,?,?,?)"
+        query = "INSERT INTO User (fname, lname, email, password) VALUES (?,?,?,?)"
 
         cur = con.cursor()
         try:
@@ -132,22 +132,6 @@ def signup():
         error = ""
 
     return render_template('signup.html', error=error, logged_in=is_logged_in())
-
-
-@app.route('/category/<category_id>')
-def addtocategory(category_id):
-    userid = session['userid']
-    timestamp = datetime.now()
-    print("user {} would like to add {} to the dictionary at {}".format(userid, category_id, timestamp))
-
-    query = "INSERT INTO Dictionary(id,userid,category_id,timestamp) VALUES (NULL,?,?,?)"
-    con = create_connection(DATABASE)
-    cur = con.cursor()
-    cur.execute(query, (userid, category_id, timestamp))
-    con.commit()
-    con.close()
-    return redirect(request.referrer)
-
 
 @app.route('/logout')
 def logout():

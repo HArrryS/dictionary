@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="Harry" uuid="8f0e7360-b964-4780-833e-00bb18757acc">
+    <data-source source="LOCAL" name="Harry.db" uuid="7081cfa8-5bf3-462d-887f-d5fef7f40145">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\18052\OneDrive - Wellington College\13DTS\dictionary\Harry.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:Harry.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.34.0/sqlite-jdbc-3.34.0.jar</url>
-        </library>
-      </libraries>
     </data-source>
   </component>
 </project>
