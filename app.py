@@ -27,18 +27,27 @@ def hello_world():
         category = request.form.get('category').title().strip()
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO dictionary (category) VALUES (?)"
+        query = "INSERT INTO categories (category) VALUES (?)"
         cur = con.cursor()
         cur.execute(query, (category, ))
         con.commit()
         con.close()
         return redirect('/')
 
+
     error = request.args.get('error')
     if error is None:
         error = ""
 
-    return render_template('home.html', error=error, logged_in=is_logged_in())
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+
+    return render_template('home.html', error=error, categories=category_list, logged_in=is_logged_in())
 
 
 @app.route('/contact')
