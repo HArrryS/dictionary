@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block pageheading %}
+Category
+{% endblock %}
+
+{% block main %}
+<table class="cart-table">
+    <thead>
+    <tr>
+        <td>Maori</td>
+        <td>English</td>
+        <td>image</td>
+    </tr>
+    </thead>
+    <tbody>
+    {%  for word in categories_data %}
+    <tr>
+        <td>{{ word[2] }}</td>
+        <td>{{ word[1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

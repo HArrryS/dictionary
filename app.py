@@ -52,7 +52,14 @@ def hello_world():
 
 @app.route('/contact')
 def contact():
-    return render_template("contact.html", logged_in=is_logged_in())
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+    return render_template("contact.html", categories=category_list, logged_in=is_logged_in())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -147,6 +154,16 @@ def logout():
     print(list(session.keys()))
     return redirect(request.referrer + '?message=See+you+next+time!')
 
+@app.route('/category/<categorysid>')
+def category(categorysid):
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+    return render_template('category.html', categories=category_list, logged_in=is_logged_in())
 
 def is_logged_in():
     if session.get("email") is None:

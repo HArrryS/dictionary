@@ -23,7 +23,6 @@
 			<span></span>
 			<ul>
                 <li><a href="\">Home</a></li>
-				<a href="/contact">Contact</a>
                 <div class="category">
                 {% for category in categories %}
                 <tr>
@@ -31,6 +30,7 @@
                 </tr>
                 {% endfor %}
                 </div>
+                <a href="/contact">Contact</a>
                 {% if logged_in %}
                 <a href="/logout">Log Out</a>
 				{% else %}
