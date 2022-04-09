@@ -6,8 +6,7 @@
 
 {% block main %}
 <h3>This is the main part of the page</h3>
-{% if logged_in %}
-<form class="myform" method="POST">
+<form class="dataForm" method="POST">
     <div class="form-group">
         <div class="form-label">Category name:</div>
         <div class="form-element"><input type="category" name="category" id="category" required></div>
@@ -17,5 +16,4 @@
         <div class="form-element"><input type="submit" value="submit" required></div>
     </div>
 </form>
-{% endif %}
 {% endblock %}

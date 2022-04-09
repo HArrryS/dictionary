@@ -24,7 +24,13 @@
 			<ul>
                 <li><a href="\">Home</a></li>
 				<a href="/contact">Contact</a>
-
+                <div class="category">
+                {% for category in categories %}
+                    <div class="category-box">
+                        <li><a href="/category/{{ category[1] }}">category[0]</a></li>
+                    </div>
+                {% endfor %}
+                </div>
                 {% if logged_in %}
                 <a href="/logout">Log Out</a>
 				{% else %}

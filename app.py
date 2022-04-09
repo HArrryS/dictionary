@@ -6,7 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -33,8 +33,6 @@ def hello_world():
         con.commit()
         con.close()
         return redirect('/')
-
-    return render_template("home.html")
 
     error = request.args.get('error')
     if error is None:
