@@ -26,15 +26,15 @@
                 <div class="category">
                 {% for category in categories %}
                 <tr>
-                    <td><a href="/category/{{ category[0]}}">{{ category[1]}}</a></td>
+                    <li><a href="/category/{{ category[0]}}">{{ category[1]}}</a></li>
                 </tr>
                 {% endfor %}
                 </div>
-                <a href="/contact">Contact</a>
+                <li><a href="/contact">Contact</a></li>
                 {% if logged_in %}
-                <a href="/logout">Log Out</a>
+                    <li><a href="/logout">Log Out</a></li>
 				{% else %}
-                <a href="/login">Login</a>
+                    <li><a href="/login">Login</a></li>
                 {% endif %}
 
 			</ul>

@@ -6,7 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -29,18 +29,17 @@ def hello_world():
         con = create_connection(DATABASE)
         query = "INSERT INTO categories (category) VALUES (?)"
         cur = con.cursor()
-        cur.execute(query, (category, ))
+        cur.execute(query, (category,))
         con.commit()
         con.close()
         return redirect('/')
-
 
     error = request.args.get('error')
     if error is None:
         error = ""
 
     con = create_connection(DATABASE)
-    query = "SELECT id, category FROM categories"
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
     cur = con.cursor()
     cur.execute(query)
 
@@ -53,7 +52,7 @@ def hello_world():
 @app.route('/contact')
 def contact():
     con = create_connection(DATABASE)
-    query = "SELECT id, category FROM categories"
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
     cur = con.cursor()
     cur.execute(query)
 
@@ -97,7 +96,15 @@ def login():
 
         return redirect("/")
 
-    return render_template("login.html", logged_in=is_logged_in())
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+
+    return render_template("login.html", categories=category_list, logged_in=is_logged_in())
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -147,6 +154,7 @@ def signup():
 
     return render_template('signup.html', error=error, logged_in=is_logged_in())
 
+
 @app.route('/logout')
 def logout():
     print(list(session.keys()))
@@ -154,16 +162,25 @@ def logout():
     print(list(session.keys()))
     return redirect(request.referrer + '?message=See+you+next+time!')
 
-@app.route('/category/<categorysid>')
-def category(categorysid):
+
+@app.route('/category/<category_id>')
+def category(category_id):
+    # connect to database
     con = create_connection(DATABASE)
-    query = "SELECT id, category FROM categories"
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
     cur = con.cursor()
     cur.execute(query)
-
     category_list = cur.fetchall()
-    cur.close()
-    return render_template('category.html', categories=category_list, logged_in=is_logged_in())
+
+    # Select the data from my database
+    query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
+
+    cur = con.cursor()
+    cur.execute(query, (category_id,))  # executes the query
+    words_list = cur.fetchall()  # put result into a list
+    con.close
+    return render_template('category.html', categories=category_list, words_list=words_list, logged_in=is_logged_in())
+
 
 def is_logged_in():
     if session.get("email") is None:
