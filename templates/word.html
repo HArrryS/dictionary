@@ -5,12 +5,12 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block pageheading %}
-Category
+Word
 {% endblock %}
 
 {% block main %}
 
-    <h2>{{ category[1]}}<a href="/deletecategory/{{ category[0]}}">- Delete Category</a></h2>
+    <h2>{{ word[1] }}<a href="/deleteword/{{ word[0]}}">- Delete Word</a></h2>
 
 <table class="cart-table">
     <thead>
@@ -31,7 +31,7 @@ Category
     </tbody>
 </table>
 <form class="dataForm" method="POST">
-    <h2>Add word</h2>
+    <h2>Edit word</h2>
     <div class="form-group">
         <div class="form-label">Maori:</div>
         <div class="form-element"><input type="maori" name="maori" id="maori" required></div>
