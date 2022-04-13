@@ -163,7 +163,7 @@ def logout():
     return redirect(request.referrer + '?message=See+you+next+time!')
 
 
-@app.route('/category/<category_id>')
+@app.route('/category/<category_id>', methods=['POST', 'GET'])
 def category(category_id):
     # connect to database
     con = create_connection(DATABASE)
@@ -171,6 +171,9 @@ def category(category_id):
     cur = con.cursor()
     cur.execute(query)
     category_list = cur.fetchall()
+    query = "SELECT id, category FROM categories WHERE id = ?"
+    cur.execute(query, (category_id, ))
+    category = cur.fetchall()
 
     # Select the data from my database
     query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
@@ -179,7 +182,29 @@ def category(category_id):
     cur.execute(query, (category_id,))  # executes the query
     words_list = cur.fetchall()  # put result into a list
     con.close
-    return render_template('category.html', categories=category_list, words_list=words_list, logged_in=is_logged_in())
+
+    if request.method == 'POST':
+     print(request.form)
+     maori = request.form.get('maori').title().strip()
+     english = request.form.get('english').title().strip()
+     level = request.form.get('level').lower().strip()
+     definition = request.form.get('definition')
+
+     con = create_connection(DATABASE)
+     query = "INSERT INTO Words (maori, english, level, definition) VALUES (?,?,?,?)"
+
+     cur = con.cursor()
+     try:
+        cur.execute(query, (maori, english, level,definition ))
+     except sqlite3.IntegrityError:
+        return redirect('/signup?error=word+is+already+used')
+     con.commit()
+     con.close()
+     return redirect('/')
+
+    return render_template('category.html', categories=category_list, words_list=words_list, category=category[0], logged_in=is_logged_in())
+
+
 
 
 def is_logged_in():
