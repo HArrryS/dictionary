@@ -9,26 +9,34 @@ Word
 {% endblock %}
 
 {% block main %}
-
-    <h2>{{ word[1] }}<a href="/deleteword/{{ word[0]}}">- Delete Word</a></h2>
-
+    {%  for word in words %}
+    <h2>{{ word[1] }}({{ word[2] }})<a href="/deleteword/{{ word[0]}}">- Delete Word</a></h2>
+    {% endfor %}
 <table class="cart-table">
+    {%  for word in words %}
     <thead>
     <tr>
-        <td>Maori</td>
-        <td>English</td>
-        <td>image</td>
+        <td><h5>Definition:</h5></td>
+        <td>{{ word[3] }}</td>
+    </tr>
+    <tr>
+        <td><h5>Level:</h5></td>
+        <td>{{ word[4] }}</td>
+    </tr>
+    <tr>
+        <td><h5>Date Added:</h5></td>
+        <td>{{ word[5] }}</td>
+    </tr>
+    <tr>
+        <td><h5>Edited By:</h5></td>
+        <td>{{ word[6] }}</td>
+    </tr>
+    <tr>
+        <img src="static/images/{{ word[7] }}.jpg"  alt="">
     </tr>
     </thead>
-    <tbody>
-    {%  for word in words_list %}
-    <tr>
-        <td><a href="/word/{{ word[0] }}">{{ word[1] }}</a></td>
-        <td>{{ word[2] }}</td>
-        <td></td>
-    </tr>
     {% endfor %}
-    </tbody>
+
 </table>
 <form class="dataForm" method="POST">
     <h2>Edit word</h2>

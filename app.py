@@ -6,7 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -212,10 +212,10 @@ def category(category_id):
 @app.route('/word/<wordid>', methods=['POST', 'GET'])
 def word(wordid):
     con = create_connection(DATABASE)
-    query = "SELECT id, maori FROM Words WHERE id = ?"
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image FROM Words WHERE id = ?"
     cur = con.cursor()
     cur.execute(query, (wordid,))
-    word = cur.fetchall()
+    words = cur.fetchall()
     con.close
 
     if request.method == 'POST':
@@ -243,7 +243,7 @@ def word(wordid):
 
     category_list = cur.fetchall()
     cur.close()
-    return render_template('word.html', logged_in=is_logged_in(), categories=category_list, word=word)
+    return render_template('word.html', logged_in=is_logged_in(), categories=category_list, words=words)
 
 
 def is_logged_in():
