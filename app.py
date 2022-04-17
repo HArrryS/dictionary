@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, session, redirect
 import sqlite3
-from sqlite3 import Error
-from flask_bcrypt import Bcrypt
 from datetime import datetime
+from sqlite3 import Error
+
+from flask import Flask, render_template, request, session, redirect
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -71,7 +72,7 @@ def login():
         password = request.form.get('password')
 
         con = create_connection(DATABASE)
-        query = "SELECT id, fname, password FROM User WHERE email=?"
+        query = "SELECT id, fname, password, lname FROM User WHERE email=?"
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()
@@ -81,7 +82,8 @@ def login():
             user_id = user_data[0][0]
             fname = user_data[0][1]
             db_password = user_data[0][2]
-            print(user_id, fname)
+            lname = user_data[0][3]
+            print(user_id, fname, lname)
 
         else:
             return redirect("/login?error=Incorrect+username+or+password")
@@ -92,6 +94,7 @@ def login():
         session['email'] = email
         session['userid'] = user_id
         session['first_name'] = fname
+        session['last_name'] = lname
         print(session)
 
         return redirect("/")
@@ -192,13 +195,17 @@ def category(category_id):
         english = request.form.get('english').title().strip()
         level = request.form.get('level').lower().strip()
         definition = request.form.get('definition')
+        timestamp = datetime.now()
+        category =category_id
+        user_id = session['userid']
+        username = session['first_name'] + " " +session['last_name']
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO Words (maori, english, level, definition) VALUES (?,?,?,?)"
+        query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username) VALUES (?,?,?,?,?,?,?,?)"
 
         cur = con.cursor()
         try:
-            cur.execute(query, (maori, english, level, definition))
+            cur.execute(query, (maori, english, level, definition, timestamp, category, user_id, username))
         except sqlite3.IntegrityError:
             return redirect('/signup?error=word+is+already+used')
         con.commit()
@@ -212,7 +219,7 @@ def category(category_id):
 @app.route('/word/<wordid>', methods=['POST', 'GET'])
 def word(wordid):
     con = create_connection(DATABASE)
-    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image FROM Words WHERE id = ?"
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
     cur = con.cursor()
     cur.execute(query, (wordid,))
     words = cur.fetchall()
