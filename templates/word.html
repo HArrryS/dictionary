@@ -38,6 +38,7 @@ Word
     {% endfor %}
 
 </table>
+{% if logged_in %}
 <form class="dataForm" method="POST">
     <h2>Edit word</h2>
     <div class="form-group">
@@ -61,4 +62,5 @@ Word
         <div class="form-element"><input type="submit" value="Add word" required></div>
     </div>
 </form>
+{% endif %}
 {% endblock %}

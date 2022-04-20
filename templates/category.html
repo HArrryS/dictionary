@@ -30,6 +30,7 @@ Category
     {% endfor %}
     </tbody>
 </table>
+{% if logged_in %}
 <form class="dataForm" method="POST">
     <h2>Add word</h2>
     <div class="form-group">
@@ -53,4 +54,5 @@ Category
         <div class="form-element"><input type="submit" value="Add word" required></div>
     </div>
 </form>
+{% endif %}
 {% endblock %}

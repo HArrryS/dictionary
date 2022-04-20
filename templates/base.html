@@ -32,7 +32,7 @@
                 </div>
                 <li><a href="/contact">Contact</a></li>
                 {% if logged_in %}
-                    <li><a href="/logout">Log Out</a></li>
+                    <li><a href="/logout">Log Out(Logged as {{ session.first_name }})</a></li>
 				{% else %}
                     <li><a href="/login">Login</a></li>
                 {% endif %}

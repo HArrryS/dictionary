@@ -210,7 +210,7 @@ def category(category_id):
             return redirect('/signup?error=word+is+already+used')
         con.commit()
         con.close()
-        return redirect('/')
+
 
     return render_template('category.html', categories=category_list, words_list=words_list, category=category[0],
                            logged_in=is_logged_in())
@@ -231,18 +231,21 @@ def word(wordid):
         english = request.form.get('english').title().strip()
         level = request.form.get('level').lower().strip()
         definition = request.form.get('definition')
+        timestamp = datetime.now()
+        user_id = session['userid']
+        username = session['first_name'] + " " +session['last_name']
+        word_id = wordid
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO Words (maori, english, level, definition) VALUES (?,?,?,?)"
-
+        query = "UPDATE Words SET maori = ?, english =?, level= ?, definition = ?, timestamp = ?, user_id = ?, " \
+                "username = ? WHERE id = ? "
         cur = con.cursor()
-        try:
-            cur.execute(query, (maori, english, level, definition))
-        except sqlite3.IntegrityError:
-            return redirect('/signup?error=word+is+already+used')
+        cur.execute(query, (maori, english, level, definition, timestamp, user_id, username, word_id))
         con.commit()
         con.close()
         return redirect('/')
+
+
     con = create_connection(DATABASE)
     query = "SELECT id, category FROM categories ORDER BY category ASC"
     cur = con.cursor()
