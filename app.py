@@ -255,6 +255,71 @@ def word(wordid):
     cur.close()
     return render_template('word.html', logged_in=is_logged_in(), categories=category_list, words=words)
 
+@app.route('/deleteword/<word_id>/<maori>')
+def delete_word(word_id, maori):
+
+
+    con = create_connection(DATABASE)
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
+    cur = con.cursor()
+    cur.execute(query, (word_id,))
+    words = cur.fetchall()
+    con.close
+
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+    return render_template("deleteword.html", categories=category_list, logged_in=is_logged_in(), words=words)
+
+@app.route('/deleteword/<word_id>')
+def deleteword(word_id):
+    print("Remove: {}".format(word_id))
+    query = "DELETE FROM Words WHERE id =? ;"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (word_id,))
+    con.commit()
+    con.close()
+    return redirect('/')
+
+@app.route('/deletecategory/<category_id>/<category>')
+def delete_category(category_id, category):
+
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories WHERE id = ?"
+    cur = con.cursor()
+    cur.execute(query, (category_id,))
+    Categories = cur.fetchall()
+    con.close
+
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
+    cur = con.cursor()
+    cur.execute(query)
+
+    category_list = cur.fetchall()
+    cur.close()
+    return render_template("deletecategory.html", categories=category_list, logged_in=is_logged_in(), Categories=Categories, )
+
+@app.route('/deletecategory/<category_id>')
+def deletecategory(category_id):
+    print("Remove: {}".format(category_id))
+    query = "DELETE FROM Words WHERE category_id =? ;"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (category_id,))
+    con.commit()
+    query = "DELETE FROM categories WHERE id =? ;"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (category_id,))
+    con.commit()
+    con.close()
+    return redirect('/')
 
 def is_logged_in():
     if session.get("email") is None:

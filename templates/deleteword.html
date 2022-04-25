@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Maōri Dictionary | Home{% endblock %}
+
+{% block heading %}Maōri - English Dictionary{% endblock %}
+
+{% block pageheading %}Deleteword{% endblock %}
+
+{% block main %}
+    <h3>Delete Confirmation </h3>
+    {%  for word in words %}
+    <h4>Are you sure to delete the word {{ word[1] }} - <a href="/deleteword/{{ word[0]}}"> Yes </a><a href="/word/{{ word[0] }}"> /No </a></h4>
+    {% endfor %}
+{% endblock %}

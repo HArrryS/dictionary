@@ -10,7 +10,7 @@ Word
 
 {% block main %}
     {%  for word in words %}
-    <h2>{{ word[1] }}({{ word[2] }})<a href="/deleteword/{{ word[0]}}">- Delete Word</a></h2>
+    <h2>{{ word[1] }}({{ word[2] }})<a href="/deleteword/{{ word[0]}}/{{ word[1] }}">- Delete Word</a></h2>
     {% endfor %}
 <table class="cart-table">
     {%  for word in words %}
