@@ -199,17 +199,18 @@ def category(category_id):
         category =category_id
         user_id = session['userid']
         username = session['first_name'] + " " +session['last_name']
+        noimage = "noimage"
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username) VALUES (?,?,?,?,?,?,?,?)"
+        query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username, image) VALUES (?,?,?,?,?,?,?,?,?)"
 
         cur = con.cursor()
-        try:
-            cur.execute(query, (maori, english, level, definition, timestamp, category, user_id, username))
-        except sqlite3.IntegrityError:
-            return redirect('/signup?error=word+is+already+used')
+
+        cur.execute(query, (maori, english, level, definition, timestamp, category, user_id, username, noimage))
+
         con.commit()
         con.close()
+        return redirect('/')
 
 
     return render_template('category.html', categories=category_list, words_list=words_list, category=category[0],
@@ -288,22 +289,27 @@ def deleteword(word_id):
 
 @app.route('/deletecategory/<category_id>/<category>')
 def delete_category(category_id, category):
-
-    con = create_connection(DATABASE)
-    query = "SELECT id, category FROM categories WHERE id = ?"
-    cur = con.cursor()
-    cur.execute(query, (category_id,))
-    Categories = cur.fetchall()
-    con.close
-
     con = create_connection(DATABASE)
     query = "SELECT id, category FROM categories ORDER BY category ASC"
     cur = con.cursor()
     cur.execute(query)
-
     category_list = cur.fetchall()
-    cur.close()
-    return render_template("deletecategory.html", categories=category_list, logged_in=is_logged_in(), Categories=Categories, )
+    query = "SELECT id, category FROM categories WHERE id = ?"
+    cur.execute(query, (category_id,))
+    Categories = cur.fetchall()
+
+    # Select the data from my database
+    query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
+
+    cur = con.cursor()
+    cur.execute(query, (category_id,))  # executes the query
+    words_list = cur.fetchall()  # put result into a list
+    con.close
+
+
+    con.close
+
+    return render_template("deletecategory.html", categories=category_list, logged_in=is_logged_in(), Categories=Categories, words_list=words_list)
 
 @app.route('/deletecategory/<category_id>')
 def deletecategory(category_id):

@@ -7,8 +7,27 @@
 {% block pageheading %}Deletecategory{% endblock %}
 
 {% block main %}
-    <h3>Delete Confirmation </h3>
     {%  for category in Categories %}
-    <h4>Are you sure to delete the category {{ category[1] }} - <a href="/deletecategory/{{ category[0]}}"> Yes </a><a href="/deletecategory/{{ category[0] }}"> /No </a></h4>
+    <h3>{{ category[1] }} Contents - Delete Confirmation </h3>
+    <h4>Are you sure to delete the category {{ category[1] }} ?- <a href="/deletecategory/{{ category[0]}}"> Yes </a><a href="/deletecategory/{{ category[0] }}"> /No </a></h4>
     {% endfor %}
+    <table class="cart-table">
+    <thead>
+    <tr>
+        <td>Maori</td>
+        <td>English</td>
+        <td>image</td>
+    </tr>
+    </thead>
+    <tbody>
+    {%  for word in words_list %}
+    <tr>
+        <td><a href="/word/{{ word[0] }}">{{ word[1] }}</a></td>
+        <td>{{ word[2] }}</td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
 {% endblock %}
