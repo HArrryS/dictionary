@@ -25,13 +25,13 @@ Category
     <tr>
         <td><a href="/word/{{ word[0] }}">{{ word[1] }}</a></td>
         <td>{{ word[2] }}</td>
-        <td><img src="/static/images/{{ word[3] }}.jpg"  alt=""></td>
+        <td><img src="/static/images/{{ word[3] }}.jpg"  alt="" width="10" height="90"></td>
     </tr>
     {% endfor %}
     </tbody>
 </table>
 {% if logged_in %}
-<form class="dataForm" method="POST">
+<form class="dataForm" method="POST" >
     <h2>Add word</h2>
     <div class="form-group">
         <div class="form-label">Maori:</div>

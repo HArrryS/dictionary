@@ -7,7 +7,7 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -171,24 +171,6 @@ def logout():
 
 @app.route('/category/<category_id>', methods=['POST', 'GET'])
 def category(category_id):
-    # connect to database
-    con = create_connection(DATABASE)
-    query = "SELECT id, category FROM categories ORDER BY category ASC"
-    cur = con.cursor()
-    cur.execute(query)
-    category_list = cur.fetchall()
-    query = "SELECT id, category FROM categories WHERE id = ?"
-    cur.execute(query, (category_id,))
-    category = cur.fetchall()
-
-    # Select the data from my database
-    query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
-
-    cur = con.cursor()
-    cur.execute(query, (category_id,))  # executes the query
-    words_list = cur.fetchall()  # put result into a list
-    con.close
-
     if request.method == 'POST':
         print(request.form)
         maori = request.form.get('maori').title().strip()
@@ -210,22 +192,32 @@ def category(category_id):
 
         con.commit()
         con.close()
-        return redirect('/')
 
+    # connect to database
+    con = create_connection(DATABASE)
+    query = "SELECT id, category FROM categories ORDER BY category ASC"
+    cur = con.cursor()
+    cur.execute(query)
+    category_list = cur.fetchall()
+    query = "SELECT id, category FROM categories WHERE id = ?"
+    cur.execute(query, (category_id,))
+    category = cur.fetchall()
+    print(category_id, category)
+
+    # Select the data from my database
+    query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
+
+    cur = con.cursor()
+    cur.execute(query, (category_id,))  # executes the query
+    words_list = cur.fetchall()  # put result into a list
+    con.close
 
     return render_template('category.html', categories=category_list, words_list=words_list, category=category[0],
-                           logged_in=is_logged_in())
+                           logged_in=is_logged_in(), catID=category_id)
 
 
 @app.route('/word/<wordid>', methods=['POST', 'GET'])
 def word(wordid):
-    con = create_connection(DATABASE)
-    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
-    cur = con.cursor()
-    cur.execute(query, (wordid,))
-    words = cur.fetchall()
-    con.close
-
     if request.method == 'POST':
         print(request.form)
         maori = request.form.get('maori').title().strip()
@@ -234,7 +226,7 @@ def word(wordid):
         definition = request.form.get('definition')
         timestamp = datetime.now()
         user_id = session['userid']
-        username = session['first_name'] + " " +session['last_name']
+        username = session['first_name'] + " " + session['last_name']
         word_id = wordid
 
         con = create_connection(DATABASE)
@@ -244,8 +236,14 @@ def word(wordid):
         cur.execute(query, (maori, english, level, definition, timestamp, user_id, username, word_id))
         con.commit()
         con.close()
-        return redirect('/')
 
+
+    con = create_connection(DATABASE)
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+    words = cur.fetchall()
+    con.close
 
     con = create_connection(DATABASE)
     query = "SELECT id, category FROM categories ORDER BY category ASC"
