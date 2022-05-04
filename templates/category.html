@@ -10,7 +10,7 @@ Category
 
 {% block main %}
 
-    <h2>{{ category[1]}}<a href="/deletecategory/{{ category[0]}}/{{ category[1]}}">- Delete Category</a></h2>
+    <h2>{{ category[1]}}{% if logged_in_teacher %}<a href="/deletecategory/{{ category[0]}}/{{ category[1]}}">- Delete Category</a>{% endif %}</h2>
 
 <table class="cart-table">
     <thead>
@@ -30,7 +30,7 @@ Category
     {% endfor %}
     </tbody>
 </table>
-{% if logged_in %}
+{% if logged_in_teacher %}
 <form class="dataForm" method="POST" >
     <h2>Add word</h2>
     <div class="form-group">

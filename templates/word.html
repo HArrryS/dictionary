@@ -10,7 +10,7 @@ Word
 
 {% block main %}
     {%  for word in words %}
-    <h2>{{ word[1] }}({{ word[2] }})<a href="/deleteword/{{ word[0]}}/{{ word[1] }}">- Delete Word</a></h2>
+    <h2>{{ word[1] }}({{ word[2] }}){% if logged_in_teacher %}<a href="/deleteword/{{ word[0]}}/{{ word[1] }}">- Delete Word</a>{% endif %}</h2>
     {% endfor %}
 <table class="cart-table">
     {%  for word in words %}
@@ -39,7 +39,7 @@ Word
     {% endfor %}
 
 </table>
-{% if logged_in %}
+{% if logged_in_teacher %}
 <form class="dataForm" method="POST">
     <h2>Edit word</h2>
     <div class="form-group">

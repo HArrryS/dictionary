@@ -47,7 +47,7 @@ def hello_world():
     category_list = cur.fetchall()
     cur.close()
 
-    return render_template('home.html', error=error, categories=category_list, logged_in=is_logged_in())
+    return render_template('home.html', error=error, categories=category_list, logged_in=is_logged_in(), logged_in_teacher=is_logged_in_teacher())
 
 
 @app.route('/contact')
@@ -59,7 +59,7 @@ def contact():
 
     category_list = cur.fetchall()
     cur.close()
-    return render_template("contact.html", categories=category_list, logged_in=is_logged_in())
+    return render_template("contact.html", categories=category_list, logged_in=is_logged_in(), logged_in_teacher=is_logged_in_teacher())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -72,7 +72,7 @@ def login():
         password = request.form.get('password')
 
         con = create_connection(DATABASE)
-        query = "SELECT id, fname, password, lname FROM User WHERE email=?"
+        query = "SELECT id, fname, password, lname, teacher FROM User WHERE email=?"
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()
@@ -83,7 +83,8 @@ def login():
             fname = user_data[0][1]
             db_password = user_data[0][2]
             lname = user_data[0][3]
-            print(user_id, fname, lname)
+            teacher = user_data[0][4]
+            print(user_id, fname, lname, teacher)
 
         else:
             return redirect("/login?error=Incorrect+username+or+password")
@@ -95,6 +96,7 @@ def login():
         session['userid'] = user_id
         session['first_name'] = fname
         session['last_name'] = lname
+        session['teacher'] = teacher
         print(session)
 
         return redirect("/")
@@ -107,7 +109,7 @@ def login():
     category_list = cur.fetchall()
     cur.close()
 
-    return render_template("login.html", categories=category_list, logged_in=is_logged_in())
+    return render_template("login.html", categories=category_list, logged_in=is_logged_in(), logged_in_teacher=is_logged_in_teacher())
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -158,7 +160,7 @@ def signup():
 
     category_list = cur.fetchall()
     cur.close()
-    return render_template('signup.html', logged_in=is_logged_in(), categories=category_list)
+    return render_template('signup.html', logged_in=is_logged_in(), categories=category_list, logged_in_teacher=is_logged_in_teacher())
 
 
 @app.route('/logout')
@@ -213,7 +215,7 @@ def category(category_id):
     con.close
 
     return render_template('category.html', categories=category_list, words_list=words_list, category=category[0],
-                           logged_in=is_logged_in(), catID=category_id)
+                           logged_in=is_logged_in(), catID=category_id, logged_in_teacher=is_logged_in_teacher())
 
 
 @app.route('/word/<wordid>', methods=['POST', 'GET'])
@@ -252,7 +254,7 @@ def word(wordid):
 
     category_list = cur.fetchall()
     cur.close()
-    return render_template('word.html', logged_in=is_logged_in(), categories=category_list, words=words)
+    return render_template('word.html', logged_in=is_logged_in(), categories=category_list, words=words, logged_in_teacher=is_logged_in_teacher())
 
 @app.route('/deleteword/<word_id>/<maori>')
 def delete_word(word_id, maori):
@@ -272,7 +274,7 @@ def delete_word(word_id, maori):
 
     category_list = cur.fetchall()
     cur.close()
-    return render_template("deleteword.html", categories=category_list, logged_in=is_logged_in(), words=words)
+    return render_template("deleteword.html", categories=category_list, logged_in=is_logged_in(), words=words, logged_in_teacher=is_logged_in_teacher())
 
 @app.route('/deleteword/<word_id>')
 def deleteword(word_id):
@@ -304,10 +306,7 @@ def delete_category(category_id, category):
     words_list = cur.fetchall()  # put result into a list
     con.close
 
-
-    con.close
-
-    return render_template("deletecategory.html", categories=category_list, logged_in=is_logged_in(), Categories=Categories, words_list=words_list)
+    return render_template("deletecategory.html", categories=category_list, logged_in=is_logged_in(), Categories=Categories, words_list=words_list, logged_in_teacher=is_logged_in_teacher())
 
 @app.route('/deletecategory/<category_id>')
 def deletecategory(category_id):
@@ -332,7 +331,13 @@ def is_logged_in():
     else:
         print("logged in")
         return True
-
+def is_logged_in_teacher():
+    if session.get("teacher") == "Y":
+        print("logged in as teacher")
+        return True
+    else:
+        print("logged in as student")
+        return False
 
 if __name__ == '__main__':
     app.run()

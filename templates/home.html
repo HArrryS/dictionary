@@ -6,7 +6,7 @@
 
 {% block main %}
 <h3>This is the main part of the page</h3>
-{% if logged_in %}
+{% if logged_in_teacher %}
 <form class="dataForm" method="POST">
     <div class="form-group">
         <div class="form-label">Category name:</div>
@@ -18,6 +18,6 @@
     </div>
 </form>
 {% else %}
-    <h3>login to add categories into dictionary</h3>
+    <h3>login as a teacher to add categories into dictionary</h3>
 {% endif %}
 {% endblock %}
