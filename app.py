@@ -124,6 +124,7 @@ def signup():
         email = request.form.get('email').lower().strip()
         password = request.form.get('password')
         password2 = request.form.get('password2')
+        role = request.form.get('role')
 
         if len(fname) < 2:
             return redirect("\signup?error=FirstName+must+be+at+least+2+charactes")
@@ -140,11 +141,11 @@ def signup():
         hashed_password = bcrypt.generate_password_hash(password)
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO User (fname, lname, email, password) VALUES (?,?,?,?)"
+        query = "INSERT INTO User (fname, lname, email, password, teacher) VALUES (?,?,?,?,?)"
 
         cur = con.cursor()
         try:
-            cur.execute(query, (fname, lname, email, hashed_password))
+            cur.execute(query, (fname, lname, email, hashed_password, role))
         except sqlite3.IntegrityError:
             return redirect('/signup?error=Email+is+already+used')
         con.commit()
@@ -184,6 +185,9 @@ def category(category_id):
         user_id = session['userid']
         username = session['first_name'] + " " +session['last_name']
         noimage = "noimage"
+
+        if int(level) > 10:
+            return redirect("/category/{}?error=level+must+be+less+than+10".format(category_id))
 
         con = create_connection(DATABASE)
         query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username, image) VALUES (?,?,?,?,?,?,?,?,?)"
