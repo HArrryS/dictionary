@@ -5,9 +5,10 @@ from sqlite3 import Error
 from flask import Flask, render_template, request, session, redirect
 from flask_bcrypt import Bcrypt
 
+
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -42,6 +43,7 @@ def is_logged_in_teacher():
         return False
 
 
+# creat function to pull categories into a list
 def category_list():
     con = create_connection(DATABASE)
     query = "SELECT id, category FROM categories ORDER BY category ASC"  # select category fom
@@ -55,7 +57,6 @@ def category_list():
 # app route to the main page
 @app.route('/', methods=['POST', 'GET'])
 def hello_world():
-
     return render_template('home.html', categories=category_list(), logged_in=is_logged_in(),
                            logged_in_teacher=is_logged_in_teacher(), )
 
@@ -85,7 +86,6 @@ def add_category():
 # app route to contact
 @app.route('/contact')
 def contact():
-
     return render_template("contact.html", categories=category_list(), logged_in=is_logged_in(),
                            logged_in_teacher=is_logged_in_teacher())
 
@@ -109,7 +109,7 @@ def login():
         user_data = cur.fetchall()
         con.close()
 
-        # check if userdata are same to the data base
+        # check if userdata are same to the database
         if user_data:
             user_id = user_data[0][0]
             fname = user_data[0][1]
@@ -211,6 +211,16 @@ def category(category_id):
         username = session['first_name'] + " " + session['last_name']
         noimage = "noimage"
 
+        con = create_connection(DATABASE)
+        query = "SELECT id FROM Words WHERE maori = ? and english = ?"
+        cur = con.cursor()
+        cur.execute(query, (maori, english,))  # executes the query
+        maori_english = cur.fetchall()
+        con.close()
+
+        if maori == maori_english[1] and english == maori_english[2]:
+            return redirect("/category/{}?error=the+world+already+exist".format(category_id))
+
         # max level is ten, so user can't add a word with level higher than ten
         if int(level) > 10:
             return redirect("/category/{}?error=level+must+be+less+than+10".format(category_id))
@@ -236,7 +246,6 @@ def category(category_id):
     print(category_id, category)
     # Select the data from my database
     query = "SELECT id, maori, english, image FROM Words WHERE category_id=? ORDER BY maori ASC"
-
     cur = con.cursor()
     cur.execute(query, (category_id,))  # executes the query
     words_list = cur.fetchall()  # put result into a list
@@ -284,7 +293,7 @@ def word(wordid):
 
 # app route for deleting worlds
 @app.route('/deleteword/<word_id>/<maori>')
-def delete_word(word_id, maori):
+def delete_word_confirmation(word_id, maori):
     # connect database
     con = create_connection(DATABASE)
     query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"  # select data from words
@@ -299,7 +308,7 @@ def delete_word(word_id, maori):
 
 # app route for the delete button
 @app.route('/deleteword/<word_id>')
-def deleteword(word_id):
+def delete_word(word_id):
     print("Remove: {}".format(word_id))
     query = "DELETE FROM Words WHERE id =? ;"  # delete the data in the database
     con = create_connection(DATABASE)  # creat connection to the database
@@ -312,7 +321,7 @@ def deleteword(word_id):
 
 # app route to delete category
 @app.route('/deletecategory/<category_id>/<category>')
-def delete_category(category_id, category):
+def delete_category_confirmation(category_id, category):
     con = create_connection(DATABASE)  # connect to the database
     cur = con.cursor()
     query = "SELECT id, category FROM categories WHERE id = ?"  # select data from categories
@@ -333,7 +342,7 @@ def delete_category(category_id, category):
 
 # app route for the delete category button
 @app.route('/deletecategory/<category_id>')
-def deletecategory(category_id):
+def delete_category(category_id):
     print("Remove: {}".format(category_id))
     query = "DELETE FROM Words WHERE category_id =? ;"  # delete all the words
     con = create_connection(DATABASE)  # connect to the database
@@ -349,14 +358,21 @@ def deletecategory(category_id):
     return redirect('/')
 
 
-@app.route('/search')
+@app.route('/search', methods=['POST', 'GET'])
 def search():
+    english_words = []
     if request.method == 'POST':
         print(request.form)
-        search_word = request.form.get('search').title().strip()  # gets the search from
-
+        search_word = request.form.get('search').strip()  # gets the search from
+        con = create_connection(DATABASE)
+        query = "SELECT id,  maori, english, image FROM Words WHERE english = ? or maori = ?"
+        cur = con.cursor()
+        cur.execute(query, (search_word, search_word))
+        english_words = cur.fetchall()
+        cur.close()
     return render_template('search.html', categories=category_list(), logged_in=is_logged_in(),
-                           logged_in_teacher=is_logged_in_teacher(), )
+                           logged_in_teacher=is_logged_in_teacher(), english_words=english_words)
+
 
 # run the website
 if __name__ == '__main__':

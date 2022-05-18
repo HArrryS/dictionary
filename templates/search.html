@@ -6,7 +6,6 @@
 
 {% block main %}
 <h3>This is the search page</h3>
-{% if logged_in_teacher %}
 <form class="dataForm" method="POST">
     <div class="form-group">
         <div class="form-label">Search:</div>
@@ -17,7 +16,22 @@
         <div class="form-element"><input type="submit" value="search" required></div>
     </div>
 </form>
-{% else %}
-    <h3>login as a teacher to add categories into dictionary</h3>
-{% endif %}
+<table class="cart-table">
+    <thead>
+    <tr>
+        <td>Maori</td>
+        <td>English</td>
+        <td>image</td>
+    </tr>
+    </thead>
+    <tbody>
+    {%  for word in english_words %}
+    <tr>
+        <td><a href="/word/{{ word[0] }}">{{ word[1] }}</a></td>
+        <td>{{ word[2] }}</td>
+        <td width="150px"><img src="/static/images/{{ word[3] }}.jpg"  alt=""></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
