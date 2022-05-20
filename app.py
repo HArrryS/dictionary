@@ -57,8 +57,20 @@ def category_list():
 # app route to the main page
 @app.route('/', methods=['POST', 'GET'])
 def hello_world():
+    english_words = []
+    if request.method == 'POST':
+        print(request.form)
+        search_word = request.form.get('search').strip()  # gets the search from
+        con = create_connection(DATABASE)
+        query = "SELECT id,  maori, english, image FROM Words WHERE english = ? or maori = ?"
+        cur = con.cursor()
+        cur.execute(query, (search_word, search_word))
+        english_words = cur.fetchall()
+        cur.close()
     return render_template('home.html', categories=category_list(), logged_in=is_logged_in(),
-                           logged_in_teacher=is_logged_in_teacher(), )
+                           logged_in_teacher=is_logged_in_teacher(), english_words=english_words)
+
+
 
 
 @app.route('/add_category', methods=['POST', 'GET'])
@@ -211,16 +223,6 @@ def category(category_id):
         username = session['first_name'] + " " + session['last_name']
         noimage = "noimage"
 
-        con = create_connection(DATABASE)
-        query = "SELECT id FROM Words WHERE maori = ? and english = ?"
-        cur = con.cursor()
-        cur.execute(query, (maori, english,))  # executes the query
-        maori_english = cur.fetchall()
-        con.close()
-
-        if maori == maori_english[1] and english == maori_english[2]:
-            return redirect("/category/{}?error=the+world+already+exist".format(category_id))
-
         # max level is ten, so user can't add a word with level higher than ten
         if int(level) > 10:
             return redirect("/category/{}?error=level+must+be+less+than+10".format(category_id))
@@ -357,21 +359,6 @@ def delete_category(category_id):
     con.close()
     return redirect('/')
 
-
-@app.route('/search', methods=['POST', 'GET'])
-def search():
-    english_words = []
-    if request.method == 'POST':
-        print(request.form)
-        search_word = request.form.get('search').strip()  # gets the search from
-        con = create_connection(DATABASE)
-        query = "SELECT id,  maori, english, image FROM Words WHERE english = ? or maori = ?"
-        cur = con.cursor()
-        cur.execute(query, (search_word, search_word))
-        english_words = cur.fetchall()
-        cur.close()
-    return render_template('search.html', categories=category_list(), logged_in=is_logged_in(),
-                           logged_in_teacher=is_logged_in_teacher(), english_words=english_words)
 
 
 # run the website
