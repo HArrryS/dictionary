@@ -25,6 +25,7 @@ def create_connection(db_file):
 
 # logging state of the user
 def is_logged_in():
+    # session are created after login
     if session.get("email") is None:  # if there is no email the user are not logged in
         print("not logged in")
         return False
@@ -35,6 +36,7 @@ def is_logged_in():
 
 # logging as a teacher or a student
 def is_logged_in_teacher():
+    # session are created after login
     if session.get("teacher") == "Y":  # if the user is the teacher
         print("logged in as teacher")
         return True
@@ -48,7 +50,7 @@ def category_list():
     con = create_connection(DATABASE)
     query = "SELECT id, category FROM categories ORDER BY category ASC"  # select category fom
     cur = con.cursor()
-    cur.execute(query)
+    cur.execute(query) # execute the query
     category_list = cur.fetchall()
     cur.close()
     return category_list
@@ -61,18 +63,18 @@ def hello_world():
     if request.method == 'POST':
         print(request.form)
         search_word = request.form.get('search').strip()  # gets the search from
-        con = create_connection(DATABASE)
-        query = "SELECT id,  maori, english, image FROM Words WHERE english = ? or maori = ?"
+        con = create_connection(DATABASE) # create connection to database
+        query = "SELECT id,  maori, english, image FROM Words WHERE english = ? or maori = ? OR level=?" # get data from database
         cur = con.cursor()
-        cur.execute(query, (search_word, search_word))
-        english_words = cur.fetchall()
+        cur.execute(query, (search_word, search_word, search_word)) # execute the query
+        english_words = cur.fetchall() # put words into a list
         cur.close()
     return render_template('home.html', categories=category_list(), logged_in=is_logged_in(),
                            logged_in_teacher=is_logged_in_teacher(), english_words=english_words)
 
 
 
-
+# app route to the add category page
 @app.route('/add_category', methods=['POST', 'GET'])
 def add_category():
     if request.method == 'POST':
@@ -188,6 +190,7 @@ def signup():
         cur = con.cursor()
         try:
             cur.execute(query, (fname, lname, email, hashed_password, role))  # execute the query
+        # if the email is not unique it will have sqlite3 error
         except sqlite3.IntegrityError:
             return redirect('/signup?error=Email+is+already+used')
         con.commit()
@@ -223,9 +226,12 @@ def category(category_id):
         username = session['first_name'] + " " + session['last_name']
         noimage = "noimage"
 
-        # max level is ten, so user can't add a word with level higher than ten
-        if int(level) > 10:
-            return redirect("/category/{}?error=level+must+be+less+than+10".format(category_id))
+        con = create_connection(DATABASE)
+        query = "SELECT maori, english FROM Words WHERE english = ? AND maori = ?"
+        cur = con.cursor()
+        cur.execute(query, (english, maori))
+        validation_duplicate = cur.fetchall()
+        cur.close()
 
         con = create_connection(DATABASE)
         # insert the data to the database
@@ -281,12 +287,12 @@ def word(wordid):
                     (maori, english, level, definition, timestamp, user_id, username, word_id))  # execute the query
         con.commit()
         con.close()
-
+    # create connection to database
     con = create_connection(DATABASE)
-    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?" # get the data from database
     cur = con.cursor()
-    cur.execute(query, (wordid,))
-    words = cur.fetchall()
+    cur.execute(query, (wordid,)) # execute query
+    words = cur.fetchall() # put words into a list
     con.close()
 
     return render_template('word.html', logged_in=is_logged_in(), categories=category_list(), words=words,
