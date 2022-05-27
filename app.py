@@ -58,7 +58,7 @@ def category_list():
 
 # app route to the main page
 @app.route('/', methods=['POST', 'GET'])
-def hello_world():
+def home_page():
     english_words = []
     if request.method == 'POST':
         print(request.form)
@@ -216,8 +216,8 @@ def category(category_id):
     # get data from form
     if request.method == 'POST':
         print(request.form)
-        maori = request.form.get('maori').title().strip()
-        english = request.form.get('english').title().strip()
+        maori = request.form.get('maori').lower().strip()
+        english = request.form.get('english').lower().strip()
         level = request.form.get('level').lower().strip()
         definition = request.form.get('definition')
         timestamp = datetime.now()
@@ -269,8 +269,8 @@ def word(wordid):
     # get data from form
     if request.method == 'POST':
         print(request.form)
-        maori = request.form.get('maori').title().strip()
-        english = request.form.get('english').title().strip()
+        maori = request.form.get('maori').lower().strip()
+        english = request.form.get('english').lower().strip()
         level = request.form.get('level').lower().strip()
         definition = request.form.get('definition')
         timestamp = datetime.now()
