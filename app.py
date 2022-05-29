@@ -1,3 +1,4 @@
+# import tools
 import sqlite3
 from datetime import datetime
 from sqlite3 import Error
@@ -9,7 +10,7 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
-app.secret_key = "banana"
+app.secret_key = "banana" # to sign session cookies for protection
 
 
 # enable the foreign keys
@@ -47,7 +48,7 @@ def is_logged_in_teacher():
 
 # creat function to pull categories into a list
 def category_list():
-    con = create_connection(DATABASE)
+    con = create_connection(DATABASE) # create connection to database
     query = "SELECT id, category FROM categories ORDER BY category ASC"  # select category fom
     cur = con.cursor()
     cur.execute(query) # execute the query
@@ -89,11 +90,7 @@ def add_category():
         con.close()
         return redirect('/')
 
-    error = request.args.get('error')
-    if error is None:
-        error = ""
-
-    return render_template('add_category.html', error=error, categories=category_list(), logged_in=is_logged_in(),
+    return render_template('add_category.html', categories=category_list(), logged_in=is_logged_in(),
                            logged_in_teacher=is_logged_in_teacher(), )
 
 
@@ -120,7 +117,7 @@ def login():
         query = "SELECT id, fname, password, lname, teacher FROM User WHERE email=?"  # select user data from database
         cur = con.cursor()
         cur.execute(query, (email,))  # excute the query
-        user_data = cur.fetchall()
+        user_data = cur.fetchall() # put data into a list
         con.close()
 
         # check if userdata are same to the database
@@ -132,6 +129,7 @@ def login():
             teacher = user_data[0][4]
             print(user_id, fname, lname, teacher)
 
+        # if it is not equal return to the URl belwo
         else:
             return redirect("/login?error=Incorrect+username+or+password")
 
@@ -328,10 +326,11 @@ def word(wordid):
 def delete_word_confirmation(word_id, maori):
     # connect database
     con = create_connection(DATABASE)
-    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"  # select data from words
+    # select data from words
+    query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?"
     cur = con.cursor()
     cur.execute(query, (word_id,))
-    words = cur.fetchall()  # pass the data to the word.html
+    words = cur.fetchall()  # put data into a list
     con.close()
 
     return render_template("deleteword.html", categories=category_list(), logged_in=is_logged_in(), words=words,
@@ -382,7 +381,6 @@ def delete_category(category_id):
     cur.execute(query, (category_id,))  # execute the query
     con.commit()
     query = "DELETE FROM categories WHERE id =? ;"  # delete the categories
-    con = create_connection(DATABASE)  # connect to the database
     cur = con.cursor()
     cur.execute(query, (category_id,))  # execute the query
     con.commit()
