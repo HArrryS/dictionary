@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana"
 
 
@@ -176,7 +176,7 @@ def signup():
             return redirect("\signup?error=LastName+must+be+at+least+2+charactes")
 
         if password2 != password:  # check if the pass word are the same
-            return redirect("\signup?error=Password+is+wrong")
+            return redirect("\signup?error=Confirm+Password+are+not+same+as+password")
 
         if len(password) < 8:  # password have to be more than seven characters
             return redirect("\signup?error=Password+must+be+at+least+8+characters")
@@ -225,22 +225,31 @@ def category(category_id):
         user_id = session['userid']
         username = session['first_name'] + " " + session['last_name']
         noimage = "noimage"
+        invalid_characters = "!@#$%^&*()<>?:{}_+|-=\][;'/.,"
 
-        con = create_connection(DATABASE)
-        query = "SELECT maori, english FROM Words WHERE english = ? AND maori = ?"
+        # check if there is any invalid characters in maori or english.
+        for i in invalid_characters:
+            if i in maori or i in english:
+                # if is invalid characters in maori or english, the code below will return user to the url.
+                return redirect(f"/category/{category_id}?error=invalid+characters+in+maori+or+english")
+
+        con = create_connection(DATABASE)  # create connection to database
+        query = "SELECT id FROM Words WHERE english = ? and maori = ?"  # get data from database
         cur = con.cursor()
-        cur.execute(query, (english, maori))
-        validation_duplicate = cur.fetchall()
-        cur.close()
+        cur.execute(query, (maori, english,)) # execute the query
+        try:
+            cur.fetchall()[0][0] # if there is value in the fetchall it will return the following URl
+            return redirect(f"/category/{category_id}?error=word+trying+to+add+is+already+in+the+dictionary")
+        # if not it will insert the word to the database.
+        except IndexError:
 
-        con = create_connection(DATABASE)
-        # insert the data to the database
-        query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username, " \
+            # insert the word to the database
+            query = "INSERT INTO Words (maori, english, level, definition, timestamp, category_id, user_id, username, " \
                 "image) VALUES (?,?,?,?,?,?,?,?,?) "
 
-        cur = con.cursor()
-        # execute the query
-        cur.execute(query, (maori, english, level, definition, timestamp, category, user_id, username, noimage))
+            cur = con.cursor()
+            # execute the query
+            cur.execute(query, (maori, english, level, definition, timestamp, category, user_id, username, noimage))
 
         con.commit()
         con.close()
@@ -277,16 +286,31 @@ def word(wordid):
         user_id = session['userid']
         username = session['first_name'] + " " + session['last_name']
         word_id = wordid
+        invalid_characters = "!@#$%^&*()<>?:{}_+|-=\][;'/.,"
 
-        con = create_connection(DATABASE)
-        # replace the word in the database
-        query = "UPDATE Words SET maori = ?, english =?, level= ?, definition = ?, timestamp = ?, user_id = ?, " \
-                "username = ? WHERE id = ? "
+        # check if there is any invalid characters in maori or english.
+        for i in invalid_characters:
+            if i in maori or i in english:
+                # if is invalid characters in maori or english, the code below will return user to the url.
+                return redirect(f"/word/{wordid}?error=invalid+characters+in+maori+or+english")
+        con = create_connection(DATABASE)  # create connection to database
+        query = "SELECT id FROM Words WHERE english = ? and maori = ?"  # get data from database
         cur = con.cursor()
-        cur.execute(query,
-                    (maori, english, level, definition, timestamp, user_id, username, word_id))  # execute the query
-        con.commit()
-        con.close()
+        cur.execute(query, (maori, english,))  # execute the query
+        try:
+            cur.fetchall()[0][0]  # if there is value in the fetchall it will return the following URl
+            return redirect(f"/word/{wordid}?error=word+trying+to+edit+is+already+in+the+dictionary")
+        # if not it will insert the word to the database.
+        except IndexError:
+            # replace the word in the database
+            query = "UPDATE Words SET maori = ?, english =?, level= ?, definition = ?, timestamp = ?, user_id = ?, " \
+                    "username = ? WHERE id = ? "
+            cur = con.cursor()
+            cur.execute(query,
+                        (maori, english, level, definition, timestamp, user_id, username, word_id))  # execute the query
+            con.commit()
+            con.close()
+
     # create connection to database
     con = create_connection(DATABASE)
     query = "SELECT id, maori, english, definition, level, timestamp, user_id, image, username FROM Words WHERE id = ?" # get the data from database
@@ -324,7 +348,7 @@ def delete_word(word_id):
     cur.execute(query, (word_id,))  # execute the query
     con.commit()
     con.close()
-    return redirect('/')
+    return redirect("/")
 
 
 # app route to delete category
