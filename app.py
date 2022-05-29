@@ -9,7 +9,7 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-DATABASE = "C:/Users/28014/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
+DATABASE = "C:/Users/18052/OneDrive - Wellington College/13DTS/dictionary/Harry.db"
 app.secret_key = "banana" # to sign session cookies for protection
 
 
